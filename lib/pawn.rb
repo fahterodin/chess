@@ -5,7 +5,7 @@
 require_relative 'piece'
 
 class Pawn
-  attr_reader :position
+  attr_reader :position, :player
 
   include Piece
 
