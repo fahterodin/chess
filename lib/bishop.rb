@@ -1,16 +1,14 @@
-# frozen_string_literal: true
-
 require_relative 'piece'
 
-class King
-  attr_reader :player, :position
+class Bishop
+  attr_reader :position, :player
 
   include Piece
 
   def initialize(position, player)
     @position = position
     @player = player
-    @moves = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]
+    @moves = populate
   end
 
   def possible_moves
@@ -20,5 +18,13 @@ class King
       move[1] += @position.last
     end
     legal_moves(possible_moves)
+  end
+
+  def populate
+    moves = []
+    for i in 1..7 do
+      moves.push([i, i], [i, -i], [-i, i], [-i, -i])
+    end
+    moves
   end
 end

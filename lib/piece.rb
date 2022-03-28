@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Piece
   def legal_moves(moves)
     moves.select do |move|

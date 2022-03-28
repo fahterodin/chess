@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require './lib/board.rb'
 
 describe Board do
@@ -15,7 +17,7 @@ describe Board do
         [nil, nil, nil, nil, nil, nil, nil, nil],
         [nil, nil, nil, nil, nil, nil, nil, nil]]
 
-        expect(board.grid).to eq(grid)     
+        expect(board.grid).to eq(grid)
       end
     end
   end
