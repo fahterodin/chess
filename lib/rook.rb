@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Rook
-  attr_reader :position, :player
+  attr_reader :position, :player, :name
 
   include Piece
 
@@ -9,6 +9,7 @@ class Rook
     @position = position
     @player = player
     @moves = populate
+    @name = 'R'
   end
 
   def possible_moves

@@ -7,7 +7,7 @@ describe Board do
     context 'a new board is created' do
       subject(:board) { described_class.new }
 
-      it 'should return an array of 8 elements each containing 8 nil elements' do
+      xit 'should return an array of 8 elements each containing 8 nil elements' do
         grid = 
           [[nil, nil, nil, nil, nil, nil, nil, nil],
           [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -19,6 +19,18 @@ describe Board do
           [nil, nil, nil, nil, nil, nil, nil, nil]]
 
         expect(board.grid).to eq(grid)
+      end
+    end
+  end
+
+  describe '#initialize' do
+    context 'the object is created' do
+      subject(:board) { described_class.new }
+
+      it 'populate a board of pieces' do
+        expect(board.row(0)[0]).to be_a(Rook)
+        expect(board.row(7)[5]).to be_a(Bishop)
+        expect(board.row(3)[2]).to be_a(EmptySquare)
       end
     end
   end

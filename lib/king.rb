@@ -3,7 +3,7 @@
 require_relative 'piece'
 
 class King
-  attr_reader :player, :position
+  attr_reader :player, :position, :name
 
   include Piece
 
@@ -11,6 +11,7 @@ class King
     @position = position
     @player = player
     @moves = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]
+    @name = 'K'
   end
 
   def possible_moves

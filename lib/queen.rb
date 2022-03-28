@@ -1,34 +1,37 @@
-# frozen_string_literal: true
-
-# will add eat moves later
-
 require_relative 'piece'
 
-class Pawn
+class Queen
   attr_reader :position, :player, :name
 
   include Piece
 
   def initialize(position, player)
-    @moves = [[0, 1], [0, 2]]
-    @eat = [[-1, 1], [1, 1]]
     @position = position
-    @start_position = position
     @player = player
-    @name = 'P'
+    @moves = populate
+    @name = 'Q'
   end
 
   def possible_moves
-    possible_moves = []
-    if @start_position == @position
-      possible_moves = @moves
-    else
-      possible_moves << @moves.first
-    end
+    possible_moves = @moves
     possible_moves.map do |move|
       move[0] += @position.first
       move[1] += @position.last
     end
     legal_moves(possible_moves)
+  end
+
+  def change_position(coordinates)
+    @position = coordinates
+  end
+
+  private
+
+  def populate
+    moves = []
+    for i in 1..7 do
+      moves.push([i, 0], [0, i], [-i, 0], [0, -i], [i, i], [i, -i], [-i, i], [-i, -i])
+    end
+    moves
   end
 end

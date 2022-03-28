@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Bishop
-  attr_reader :position, :player
+  attr_reader :position, :player, :name
 
   include Piece
 
@@ -9,6 +9,7 @@ class Bishop
     @position = position
     @player = player
     @moves = populate
+    @name = 'B'
   end
 
   def possible_moves
@@ -19,6 +20,8 @@ class Bishop
     end
     legal_moves(possible_moves)
   end
+
+  private
 
   def populate
     moves = []
