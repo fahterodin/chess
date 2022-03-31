@@ -13,21 +13,19 @@ class Bishop
   end
 
   def possible_moves
-    possible_moves = @moves
-    possible_moves.map do |move|
-      move[0] += @position.first
-      move[1] += @position.last
-    end
-    legal_moves(possible_moves)
+    calculate_moves(Array.new(4) { Array.new }, @moves)
   end
 
   private
 
   def populate
-    moves = []
+    moves = Array.new(4) { Array.new }
     for i in 1..7 do
-      moves.push([i, i], [i, -i], [-i, i], [-i, -i])
+      moves[0].push([i, i])
+      moves[1].push([i, -i])
+      moves[2].push([-i, i])
+      moves[3].push([-i, -i])
     end
-    moves
+    moves.freeze
   end
 end

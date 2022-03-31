@@ -13,25 +13,23 @@ class Queen
   end
 
   def possible_moves
-    possible_moves = @moves
-    possible_moves.map do |move|
-      move[0] += @position.first
-      move[1] += @position.last
-    end
-    legal_moves(possible_moves)
-  end
-
-  def change_position(coordinates)
-    @position = coordinates
+    calculate_moves(Array.new(8) { Array.new }, @moves)
   end
 
   private
 
   def populate
-    moves = []
+    moves = Array.new(8) { Array.new }
     for i in 1..7 do
-      moves.push([i, 0], [0, i], [-i, 0], [0, -i], [i, i], [i, -i], [-i, i], [-i, -i])
+      moves[0].push([i, 0])
+      moves[1].push([0, -i])
+      moves[2].push([-i, 0])
+      moves[3].push([0, -i])
+      moves[4].push([i, i])
+      moves[5].push([i, -i])
+      moves[6].push([-i, i])
+      moves[7].push([-i, -i])
     end
-    moves
+    moves.freeze
   end
 end

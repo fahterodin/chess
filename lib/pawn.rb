@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# will add eat moves later
-
 require_relative 'piece'
 
 class Pawn
@@ -10,25 +8,42 @@ class Pawn
   include Piece
 
   def initialize(position, player)
-    @moves = [[0, 1], [0, 2]]
-    @eat = [[-1, 1], [1, 1]]
+    @moves_white = [[0, 1], [0, 2]].freeze
+    @eat_white = [[[-1, 1]], [[1, 1]]].freeze
+    @moves_black = [[0, -1], [0, -2]].freeze
+    @eat_black = [[[-1, -1]], [[1, -1]]].freeze
     @position = position
-    @start_position = position
     @player = player
     @name = 'P'
+    @first_move = true
   end
 
   def possible_moves
-    possible_moves = []
-    if @start_position == @position
-      possible_moves = @moves
-    else
-      possible_moves << @moves.first
+    moves = []
+    case @player
+    when 'W'
+      if @first_move == true
+        moves[0] = @moves_white
+      else
+        moves[0] = [@moves_white[0]]
+      end
+    when 'B'
+      if @first_move == true
+        moves = @moves_black
+      else
+        moves = [@moves_black[0]]
+      end
     end
-    possible_moves.map do |move|
-      move[0] += @position.first
-      move[1] += @position.last
+    @first_move = false
+    calculate_moves(Array.new(1) { Array.new }, moves)
+  end
+
+  def possible_eat
+    case @player
+    when 'W'
+      calculate_moves(Array.new(2) { Array.new }, @eat_white)
+    when 'B'
+      calculate_moves(Array.new(2) { Array.new }, @eat_black)
     end
-    legal_moves(possible_moves)
   end
 end

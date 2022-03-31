@@ -8,16 +8,11 @@ class Knight
   def initialize(position, player)
     @position = position
     @player = player
-    @moves = [[2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2], [2, -1]]
+    @moves = [[[2, 1]], [[1, 2]], [[-1, 2]], [[-2, 1]], [[-2, -1]], [[-1, -2]], [[1, -2]], [[2, -1]]].freeze
     @name = 'L'
   end
 
   def possible_moves
-    possible_moves = @moves
-    possible_moves.map do |move|
-      move[0] += @position.first
-      move[1] += @position.last
-    end
-    legal_moves(possible_moves)
+    calculate_moves(Array.new(8) { Array.new }, @moves)
   end
 end

@@ -6,7 +6,7 @@ describe King do
       subject(:king) { described_class.new([3, 3], 'white') }
 
       it 'list all the possible moves' do
-        moves = [[4, 3], [4, 4], [3, 4], [2, 4], [2, 3], [2, 2], [3, 2], [4, 2]]
+        moves = [[[4, 3]], [[4, 4]], [[3, 4]], [[2, 4]], [[2, 3]], [[2, 2]], [[3, 2]], [[4, 2]]]
 
         expect(king.possible_moves).to eq(moves)
       end
