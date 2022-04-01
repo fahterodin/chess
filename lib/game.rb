@@ -1,4 +1,11 @@
-Dir['./lib/*.rb'].each { |file| require file }
+require_relative 'rook'
+require_relative 'knight'
+require_relative 'empty_square'
+require_relative 'pawn'
+require_relative 'bishop'
+require_relative 'queen'
+require_relative 'king'
+require_relative 'board'
 
 class Game
   attr_reader :board, :white_eated, :black_eated
@@ -11,31 +18,65 @@ class Game
   end
 
   def play
-    turn
+    piece = turn
+    check(piece)
     @player = @player == 'W' ? 'B' : 'W'
+    play
+  end
+
+  def check(piece)
+    moves = moves_by_piece(piece)
+    moves.each do |coordinate|
+      other_piece = get_piece(coordinate)
+      if other_piece.name == 'K' && other_piece.player != @player
+        if check_mate(other_piece)
+          puts "Check mate: #{@player} player win!"
+          exit
+        end
+        puts 'Check!'
+        break
+      end
+    end
   end
 
   def check_mate(piece)
-    foe = piece.player == 'W' ? 'B' : 'W'
-    moves = piece.possible_moves.select do |move|
-      @board.row(move.last)[move.first].name == 'K' && @board.row(move.last)[move.first].player == foe
-    end
-    puts 'Check' unless moves.empty?
+    moves = moves_by_piece(piece)
+    check_king(piece, moves).sort == moves.sort
   end
 
-  def game_finished?
-    return puts 'Player Black won!' if @white_eated.include?('K')
+  def check_king(piece, moves)
+    moves_with_check = []
+    moves.each do |coordinate|
+      board_copy = copy_board(piece, coordinate)
+      for i in 0..7 do
+        for j in 0..7 do
+          piece_copy = board_copy.row(i)[j]
+          next if piece_copy.is_a? EmptySquare
 
-    return puts 'Player White won!' if @black_eated.include?('K')
+          moves_copy = moves_by_piece(piece_copy)
+          moves_with_check << piece.position if moves_copy.include?(coordinate)
+        end
+      end
+    end
+    moves_with_check
+  end
+
+  def copy_board(piece, coordinate)
+    board_copy = Marshal.load(Marshal.dump(@board))
+    old_position = piece.position
+    board_copy.row(coordinate.last)[coordinate.first] = King.new(coordinate, piece.player)
+    board_copy.row(old_position.last)[old_position.first] = EmptySquare.new(old_position)
+    board_copy
   end
 
   def turn
+    @board.display
     puts "It's #{@player} player turn"
     puts 'Choose a piece to move using coordinates'
     piece = get_piece(ask_input)
     return play unless piece.player == @player
 
-    moves = piece.name == 'P' ? pawn(piece) : list_moves(piece)
+    moves = moves_by_piece(piece)
     puts "Here's the possible moves for #{piece.name}"
     p moves
     puts 'Choose where to move the piece'
@@ -43,6 +84,10 @@ class Game
     return play unless moves.include?(goal_coordinates)
 
     move_piece(piece, goal_coordinates)
+  end
+
+  def moves_by_piece(piece)
+    piece.name == 'P' ? pawn(piece) : list_moves(piece)
   end
 
   def list_moves(piece)
@@ -133,3 +178,6 @@ class Game
     end
   end
 end
+
+# game = Game.new
+# game.play

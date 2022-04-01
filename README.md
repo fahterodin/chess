@@ -37,4 +37,8 @@ This piece can move one square forward, and eat only in the square diagonal righ
 
 The moves in each class should be ordered and divided in directions, so that when the possible moves method is called, we can stop if we reach another piece, and it will help for the declare check
 
-Next in line --> fix pawn possible_moves
+method check that checks if the moved piece can now eat the king
+  call list move for the updated piece, 
+  if one of the coordinate is equal to the king for coordinate declare check
+
+finishid check king spec

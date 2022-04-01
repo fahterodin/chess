@@ -1,6 +1,10 @@
-# frozen_string_literal: true
-
-Dir['./lib/*.rb'].each { |file| require file }
+require_relative 'rook'
+require_relative 'knight'
+require_relative 'empty_square'
+require_relative 'pawn'
+require_relative 'bishop'
+require_relative 'queen'
+require_relative 'king'
 
 class Board
   attr_reader :grid
@@ -58,6 +62,3 @@ class Board
     @grid[6] = [Pawn.new([0, 6], 'B'), Pawn.new([1, 6], 'B'), Pawn.new([2, 6], 'B'), Pawn.new([3, 6], 'B'), Pawn.new([4, 6], 'B'), Pawn.new([5, 6], 'B'), Pawn.new([6, 6], 'B'), Pawn.new([7, 6], 'B')]
   end
 end
-
-# board = Board.new
-# board.display

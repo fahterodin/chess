@@ -75,18 +75,6 @@ describe Game do
     end
   end
 
-  describe '#check_mate' do
-    context 'we have moved a piece, we want to check if it\' within reach of the king' do
-      subject(:game) { described_class.new }
-      let(:bishop) { Bishop.new([5, 1], 'B') }
-
-      xit 'returns an alert message of check' do
-        expect(game).to receive(:puts).with('Check')
-        game.check_mate(bishop)
-      end
-    end
-  end
-
   describe '#list_moves' do
     context 'player wants to move a piece' do
       subject(:game) { described_class.new }
@@ -129,6 +117,67 @@ describe Game do
       it 'returns a list moves' do
         moves = [[0, 2], [0, 3]]
         expect(game.pawn_moves(piece)).to match_array(moves)
+      end
+    end
+  end
+
+  describe '#check' do
+    context 'a piece has been moved in the scope of the king' do
+      subject(:game) { described_class.new }
+      let(:king) { King.new([3, 3], 'B') }
+      let(:knight) { Knight.new([1, 2], 'W') }
+
+      before do
+        game.board.row(3)[3] = king
+      end
+
+      xit 'display check message' do
+        expect(game).to receive(:puts).with('Check!').once
+        game.check(knight)
+      end
+    end
+  end
+
+  describe '#check_mate' do
+    context 'the king is within the scope of the moved piece, we check if all the other king moves put him in check' do
+      subject(:game) { described_class.new }
+      let(:bishop) { Bishop.new([5, 1], 'B') }
+
+      xit 'if so, game ends with the declaration of winner' do
+        expect(game).to receive(:puts).with('Check')
+        game.check_mate(bishop)
+      end
+    end
+  end
+
+  describe '#copy_board' do
+    context 'the method is called with a piece king' do
+      subject(:game) { described_class.new }
+      let(:king) { King.new([3, 3], 'W') }
+      let(:board_copy) { Board.new }
+
+      before do
+        board_copy.row(3)[3] = EmptySquare.new([3, 3])
+        board_copy.row(4)[4] = King.new([4, 4], 'W')
+      end
+
+      it 'update the copy of the board' do
+        coordinate = [4, 4]
+        board = game.copy_board(king, coordinate)
+        expect(board.row(4)[4].name).to eq(board_copy.row(4)[4].name)
+      end
+    end
+  end
+
+  describe '#check_king' do
+    context 'the king is in scoper of a piece, we create a copy of the board with all the updated position of the king and check if the king is in check in that position' do
+      subject(:game) { described_class.new }
+      let(:king) { King.new([3, 3], 'W') }
+
+      it 'returns an empty array' do
+        moves = [[[4, 3]], [[4, 4]], [[3, 4]], [[2, 4]], [[2, 3]], [[2, 2]], [[3, 2]], [[4, 2]]]
+
+        expect(game.check_king(king, moves)).to eq([])
       end
     end
   end
