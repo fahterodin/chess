@@ -29,9 +29,9 @@ class Pawn
       end
     when 'B'
       if @first_move == true
-        moves = @moves_black
+        moves[0] = @moves_black
       else
-        moves = [@moves_black[0]]
+        moves[0] = [@moves_black[0]]
       end
     end
     @first_move = false

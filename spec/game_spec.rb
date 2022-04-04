@@ -119,6 +119,20 @@ describe Game do
         expect(game.pawn_moves(piece)).to match_array(moves)
       end
     end
+
+    context 'it\'s the first move and another piece is in the second square in front of the pawn' do
+      subject(:game) { described_class.new }
+      let(:pawn) { Pawn.new([4, 1], 'W') }
+
+      before do
+        game.board.row(3)[4] = King.new([4, 3], 'B')
+      end
+
+      it 'return only the first step' do
+        moves = [[4, 2]]
+        expect(game.pawn_moves(pawn)).to eq(moves)
+      end
+    end
   end
 
   describe '#check' do
@@ -153,31 +167,40 @@ describe Game do
   describe '#copy_board' do
     context 'the method is called with a piece king' do
       subject(:game) { described_class.new }
-      let(:king) { King.new([3, 3], 'W') }
+      let(:king_new) { King.new([3, 3], 'W') }
+      let(:king_old) { King.new([4, 4], 'W') }
       let(:board_copy) { Board.new }
 
       before do
-        board_copy.row(3)[3] = EmptySquare.new([3, 3])
-        board_copy.row(4)[4] = King.new([4, 4], 'W')
+        board_copy.row(4)[4] = EmptySquare.new([4, 4])
+        board_copy.row(3)[3] = King.new([3, 3], 'W')
       end
 
-      it 'update the copy of the board' do
-        coordinate = [4, 4]
-        board = game.copy_board(king, coordinate)
-        expect(board.row(4)[4].name).to eq(board_copy.row(4)[4].name)
+      xit 'update the copy of the board' do
+        expect(game.copy_board(king_old, [3, 3]).row(3)[3].name).to eq('K')
+
+        expect(game.copy_board(king_old, [3, 3]).row(4)[4].name).to eq('E')
       end
     end
   end
 
   describe '#check_king' do
-    context 'the king is in scoper of a piece, we create a copy of the board with all the updated position of the king and check if the king is in check in that position' do
+    context 'the king is in scope of a piece, we create a copy of the board with all the updated position of the king and check if the king is in check in that position' do
       subject(:game) { described_class.new }
       let(:king) { King.new([3, 3], 'W') }
+      let(:king_eat) { King.new([3, 3], 'B') }
+      let(:board_copy) { Board.new }
+
+      before do
+        allow(game).to receive(:copy_board).and_return(board_copy)
+      end
 
       it 'returns an empty array' do
-        moves = [[[4, 3]], [[4, 4]], [[3, 4]], [[2, 4]], [[2, 3]], [[2, 2]], [[3, 2]], [[4, 2]]]
+        expect(game.check_king(king)).to eq([])
+      end
 
-        expect(game.check_king(king, moves)).to eq([])
+      it 'returns the moves of the king with check' do
+        expect(game.check_king(king_eat)).to eq([[2, 2], [3, 2], [4, 2]])
       end
     end
   end

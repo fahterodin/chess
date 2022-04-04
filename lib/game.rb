@@ -20,8 +20,17 @@ class Game
   def play
     piece = turn
     check(piece)
+    game_finished
     @player = @player == 'W' ? 'B' : 'W'
     play
+  end
+
+  def game_finished
+    if @white_eated.include?('K') || @black_eated.include?('K')
+      @board.display
+      puts "#{@player} wins!"
+      exit
+    end
   end
 
   def check(piece)
@@ -30,6 +39,7 @@ class Game
       other_piece = get_piece(coordinate)
       if other_piece.name == 'K' && other_piece.player != @player
         if check_mate(other_piece)
+          @board.display
           puts "Check mate: #{@player} player win!"
           exit
         end
@@ -41,32 +51,30 @@ class Game
 
   def check_mate(piece)
     moves = moves_by_piece(piece)
-    check_king(piece, moves).sort == moves.sort
+    check_king(piece).sort == moves.sort
   end
 
-  def check_king(piece, moves)
+  def check_king(piece)
+    moves = moves_by_piece(piece)
     moves_with_check = []
     moves.each do |coordinate|
-      board_copy = copy_board(piece, coordinate)
-      for i in 0..7 do
-        for j in 0..7 do
-          piece_copy = board_copy.row(i)[j]
+      board_copy = copy_board
+      board_copy.row(coordinate.last)[coordinate.first] = King.new(coordinate, piece.player)
+      board_copy.row(piece.position.last)[piece.position.first] = EmptySquare.new(piece.position)
+      board_copy.grid.each do |row|
+        row.each do |piece_copy|
           next if piece_copy.is_a? EmptySquare
 
-          moves_copy = moves_by_piece(piece_copy)
-          moves_with_check << piece.position if moves_copy.include?(coordinate)
+          moves_copy = moves_by_piece(piece_copy, board_copy)
+          moves_with_check << coordinate if moves_copy.include?(coordinate) && piece_copy.player != piece.player
         end
       end
     end
-    moves_with_check
+    moves_with_check.uniq
   end
 
-  def copy_board(piece, coordinate)
-    board_copy = Marshal.load(Marshal.dump(@board))
-    old_position = piece.position
-    board_copy.row(coordinate.last)[coordinate.first] = King.new(coordinate, piece.player)
-    board_copy.row(old_position.last)[old_position.first] = EmptySquare.new(old_position)
-    board_copy
+  def copy_board
+    Marshal.load(Marshal.dump(@board))
   end
 
   def turn
@@ -77,6 +85,10 @@ class Game
     return play unless piece.player == @player
 
     moves = moves_by_piece(piece)
+    if moves.empty?
+      puts 'You cannot move that piece!'
+      return play
+    end
     puts "Here's the possible moves for #{piece.name}"
     p moves
     puts 'Choose where to move the piece'
@@ -86,15 +98,15 @@ class Game
     move_piece(piece, goal_coordinates)
   end
 
-  def moves_by_piece(piece)
-    piece.name == 'P' ? pawn(piece) : list_moves(piece)
+  def moves_by_piece(piece, board = @board)
+    piece.name == 'P' ? pawn(piece, board) : list_moves(piece, board)
   end
 
-  def list_moves(piece)
+  def list_moves(piece, board = @board)
     actual_moves = []
     piece.possible_moves.each do |direction|
       direction.each do |coordinate|
-        other_piece = get_piece(coordinate)
+        other_piece = get_piece(coordinate, board)
         actual_moves << coordinate unless other_piece.player == piece.player
         break unless other_piece.is_a? EmptySquare
       end
@@ -102,28 +114,28 @@ class Game
     actual_moves
   end
 
-  def pawn(piece)
-    moves = pawn_moves(piece)
-    eat = pawn_eat(piece)
+  def pawn(piece, board = @board)
+    moves = pawn_moves(piece, board)
+    eat = pawn_eat(piece, board)
     moves.concat(eat)
   end
 
-  def pawn_moves(piece)
+  def pawn_moves(piece, board = @board)
     actual_moves = []
     piece.possible_moves.each do |direction|
       direction.each do |coordinate|
-        other_piece = get_piece(coordinate)
+        other_piece = get_piece(coordinate, board)
         actual_moves << coordinate if other_piece.is_a?(EmptySquare)
       end
     end
     actual_moves
   end
 
-  def pawn_eat(piece)
+  def pawn_eat(piece, board = @board)
     eat = []
     piece.possible_eat.each do |direction|
       direction.each do |coordinate|
-        piece_to_eat = get_piece(coordinate)
+        piece_to_eat = get_piece(coordinate, board)
         eat << coordinate unless piece_to_eat.is_a?(EmptySquare) || piece_to_eat.player == @player
       end
     end
@@ -144,10 +156,10 @@ class Game
     piece
   end
 
-  def get_piece(coordinates)
+  def get_piece(coordinates, board = @board)
     x = coordinates.first
     y = coordinates.last
-    @board.row(y)[x]
+    board.row(y)[x]
   end
 
   def ask_input
@@ -179,5 +191,5 @@ class Game
   end
 end
 
-# game = Game.new
-# game.play
+game = Game.new
+game.play
