@@ -23,7 +23,7 @@ class Queen
     moves = Array.new(8) { Array.new }
     for i in 1..7 do
       moves[0].push([i, 0])
-      moves[1].push([0, -i])
+      moves[1].push([0, i])
       moves[2].push([-i, 0])
       moves[3].push([0, -i])
       moves[4].push([i, i])

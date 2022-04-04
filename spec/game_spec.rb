@@ -28,19 +28,6 @@ describe Game do
         game.ask_input
       end
     end
-    context 'the player gives a valid input but outside the board' do
-      subject(:game) { described_class.new }
-
-      before do
-        allow(game).to receive(:puts).at_least(2).times
-        allow(game).to receive(:gets).and_return('9', '3')
-      end
-
-      xit 'returns error message' do
-        expect(game).to receive(:puts).with('Choose number between 0 and 7').once
-        game.ask_input
-      end
-    end
   end
 
   describe '#get_pieces' do
@@ -84,6 +71,21 @@ describe Game do
         moves = [[2, 2], [4, 2], [2, 4], [1, 5], [0, 6], [4, 4], [5, 5], [6, 6]]
 
         expect(game.list_moves(bishop)).to match_array(moves)
+      end
+    end
+
+    context 'possible queen bug' do
+      subject(:game) { described_class.new }
+      let(:queen) { Queen.new([3, 0], 'W') }
+
+      before do
+        game.board.row(1)[3] = EmptySquare.new([3, 1])
+      end
+
+      it 'list che correct move set' do
+        moves = [[3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6]]
+
+        expect(game.list_moves(queen)).to match_array(moves)
       end
     end
   end
@@ -131,55 +133,6 @@ describe Game do
       it 'return only the first step' do
         moves = [[4, 2]]
         expect(game.pawn_moves(pawn)).to eq(moves)
-      end
-    end
-  end
-
-  describe '#check' do
-    context 'a piece has been moved in the scope of the king' do
-      subject(:game) { described_class.new }
-      let(:king) { King.new([3, 3], 'B') }
-      let(:knight) { Knight.new([1, 2], 'W') }
-
-      before do
-        game.board.row(3)[3] = king
-      end
-
-      xit 'display check message' do
-        expect(game).to receive(:puts).with('Check!').once
-        game.check(knight)
-      end
-    end
-  end
-
-  describe '#check_mate' do
-    context 'the king is within the scope of the moved piece, we check if all the other king moves put him in check' do
-      subject(:game) { described_class.new }
-      let(:bishop) { Bishop.new([5, 1], 'B') }
-
-      xit 'if so, game ends with the declaration of winner' do
-        expect(game).to receive(:puts).with('Check')
-        game.check_mate(bishop)
-      end
-    end
-  end
-
-  describe '#copy_board' do
-    context 'the method is called with a piece king' do
-      subject(:game) { described_class.new }
-      let(:king_new) { King.new([3, 3], 'W') }
-      let(:king_old) { King.new([4, 4], 'W') }
-      let(:board_copy) { Board.new }
-
-      before do
-        board_copy.row(4)[4] = EmptySquare.new([4, 4])
-        board_copy.row(3)[3] = King.new([3, 3], 'W')
-      end
-
-      xit 'update the copy of the board' do
-        expect(game.copy_board(king_old, [3, 3]).row(3)[3].name).to eq('K')
-
-        expect(game.copy_board(king_old, [3, 3]).row(4)[4].name).to eq('E')
       end
     end
   end
