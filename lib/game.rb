@@ -9,7 +9,7 @@ require_relative 'board'
 require_relative 'serialization'
 
 class Game
-  attr_reader :board, :white_eated, :black_eated, :turn
+  attr_reader :board, :white_eated, :black_eated
 
   include Serialization
 
@@ -18,19 +18,67 @@ class Game
     @player = 'W'
     @white_eated = []
     @black_eated = []
-    @turn = 1
+  end
+
+  def start
+    puts 'Would you like to load the previous game? y/n'
+    from_yaml if gets.chomp == 'y'
+    puts 'Play vs CPU? y/n'
+    return play_cpu if gets.chomp == 'y'
+
+    play
+  end
+
+  def play_cpu
+    piece = @player == 'W' ? turn_human : turn_cpu
+    check(piece)
+    game_finished
+    @player = @player == 'W' ? 'B' : 'W'
+    @board.display
+    puts 'Would you like to save the game and exit? y/n'
+    return to_yaml if gets.chomp == 'y'
+
+    play_cpu
+  end
+
+  def turn_cpu
+    x = rand(0..7)
+    y = rand(0..7)
+    piece = get_piece([x, y])
+    return play_cpu unless piece.player == @player
+
+    moves = moves_by_piece(piece)
+    return play_cpu if moves.empty?
+
+    move_piece(piece, moves.sample)
+  end
+
+  def turn_human
+    @board.display
+    puts "It's #{@player} player turn"
+    puts 'Choose a piece to move using coordinates'
+    piece = get_piece(ask_input)
+    return play_cpu unless piece.player == @player
+
+    moves = moves_by_piece(piece)
+    if moves.empty?
+      puts 'You cannot move that piece!'
+      return play_cpu
+    end
+    puts "Here's the possible moves for #{piece.name}"
+    p moves
+    puts 'Choose where to move the piece'
+    goal_coordinates = ask_input
+    return play_cpu unless moves.include?(goal_coordinates)
+
+    move_piece(piece, goal_coordinates)
   end
 
   def play
-    if @turn == 1
-      puts 'Would you like to load the previous game? y/n'
-      from_yaml if gets.chomp == 'y'
-    end
     piece = turn
     check(piece)
     game_finished
     @player = @player == 'W' ? 'B' : 'W'
-    @turn += 1
     @board.display
     puts 'Would you like to save the game and exit? y/n'
     return to_yaml if gets.chomp == 'y'
@@ -205,4 +253,4 @@ class Game
 end
 
 game = Game.new
-game.play
+game.start
