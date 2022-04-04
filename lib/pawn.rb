@@ -3,7 +3,7 @@
 require_relative 'piece'
 
 class Pawn
-  attr_reader :position, :player, :name
+  attr_reader :position, :player, :name, :display
 
   include Piece
 
@@ -16,6 +16,7 @@ class Pawn
     @player = player
     @name = 'P'
     @first_move = true
+    @display = display_symbol
   end
 
   def possible_moves
@@ -45,5 +46,11 @@ class Pawn
     when 'B'
       calculate_moves(Array.new(2) { Array.new }, @eat_black)
     end
+  end
+
+  private
+
+  def display_symbol
+    @player == 'W' ? '♙' : '♟'
   end
 end

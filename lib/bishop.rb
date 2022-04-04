@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Bishop
-  attr_reader :position, :player, :name
+  attr_reader :position, :player, :name, :display
 
   include Piece
 
@@ -10,6 +10,7 @@ class Bishop
     @player = player
     @moves = populate
     @name = 'B'
+    @display = display_symbol
   end
 
   def possible_moves
@@ -27,5 +28,9 @@ class Bishop
       moves[3].push([-i, -i])
     end
     moves.freeze
+  end
+
+  def display_symbol
+    @player == 'W' ? '♗' : '♝'
   end
 end

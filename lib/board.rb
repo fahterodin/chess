@@ -41,12 +41,12 @@ class Board
     until i.negative?
       print " #{i}"
       row(i).each do |piece|
-        print "| #{piece.name}-#{piece.player} "
+        print "| #{piece.display} "
       end
       print "\n"
       i -= 1
     end
-    print "     0  |  1  |  2  |  3  |  4  |  5  |  6  |  7 \n"
+    print "    0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 \n"
   end
 
   private

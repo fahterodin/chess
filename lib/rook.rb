@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Rook
-  attr_reader :position, :player, :name
+  attr_reader :position, :player, :name, :display
 
   include Piece
 
@@ -10,6 +10,7 @@ class Rook
     @player = player
     @moves = populate
     @name = 'R'
+    @display = display_symbol
   end
 
   def possible_moves
@@ -27,5 +28,9 @@ class Rook
       moves[3].push([0, -i])
     end
     moves.freeze
+  end
+
+  def display_symbol
+    @player == 'W' ? '♖' : '♜'
   end
 end
