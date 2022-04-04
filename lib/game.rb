@@ -6,22 +6,35 @@ require_relative 'bishop'
 require_relative 'queen'
 require_relative 'king'
 require_relative 'board'
+require_relative 'serialization'
 
 class Game
-  attr_reader :board, :white_eated, :black_eated
+  attr_reader :board, :white_eated, :black_eated, :turn
+
+  include Serialization
 
   def initialize
     @board = Board.new
     @player = 'W'
     @white_eated = []
     @black_eated = []
+    @turn = 1
   end
 
   def play
+    if @turn == 1
+      puts 'Would you like to load the previous game? y/n'
+      from_yaml if gets.chomp == 'y'
+    end
     piece = turn
     check(piece)
     game_finished
     @player = @player == 'W' ? 'B' : 'W'
+    @turn += 1
+    @board.display
+    puts 'Would you like to save the game and exit? y/n'
+    return to_yaml if gets.chomp == 'y'
+
     play
   end
 

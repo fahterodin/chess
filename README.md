@@ -41,4 +41,4 @@ method check that checks if the moved piece can now eat the king
   call list move for the updated piece, 
   if one of the coordinate is equal to the king for coordinate declare check
 
-finishid check king spec
+serialization
